@@ -26,7 +26,7 @@ st.markdown("""
 ARCHIVO_EQUIPO = "equipo.csv"
 ARCHIVO_ENTRENADORES = "entrenadores.csv"
 ARCHIVO_HISTORIAL = "historial.csv"
-# Nombres posibles del archivo de Pokémon
+# Lista de nombres posibles del archivo de Pokémon
 POKEMON_CSV_FILES = [
     "pokemones.txt",
     "deepseek_csv_20260716_2c7d55.txt",
@@ -130,6 +130,10 @@ def cargar_partida():
         st.session_state.historial_acciones = df['accion'].tolist()
 
 def cargar_pokedex(archivo_subido=None):
+    # === LÍNEA DE DEPURACIÓN: muestra los archivos en el directorio ===
+    st.write("📂 Archivos en el directorio:", os.listdir())
+    # ================================================================
+    
     if archivo_subido is not None:
         try:
             df = pd.read_csv(archivo_subido)
@@ -147,12 +151,15 @@ def cargar_pokedex(archivo_subido=None):
                 df = pd.read_csv(nombre_archivo)
                 st.session_state.pokedex = df.to_dict('records')
                 st.session_state.pokedex_cargado = True
+                st.success(f"Archivo '{nombre_archivo}' cargado automáticamente.")
                 return
-            except:
+            except Exception as e:
+                st.error(f"Error al leer '{nombre_archivo}': {e}")
                 continue
 
     st.session_state.pokedex = []
     st.session_state.pokedex_cargado = False
+    st.warning("No se encontró ningún archivo de Pokémon. Carga uno manualmente.")
 
 def obtener_nombres_equipo():
     return [p.nombre.lower() for p in st.session_state.equipo.obtener_todos()]
