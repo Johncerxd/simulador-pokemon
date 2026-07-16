@@ -10,7 +10,7 @@ st.set_page_config(page_title="Simulador Pokémon Pro", layout="wide")
 st.markdown("""
     <style>
     .stApp {
-        background: url('https://wallpapercave.com/wp/wp2567439.jpg') no-repeat center center fixed;
+        background: url('https://wallpapercave.com/w/wp12939364') no-repeat center center fixed;
         background-size: cover;
     }
     .console-box {
