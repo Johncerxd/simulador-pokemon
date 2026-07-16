@@ -25,4 +25,4 @@ with col2:
         for p in st.session_state.equipo.obtener_todos():
             p.restaurar_hp()
         st.success("¡Curado!")
-        st.rerun(
+        st.rerun()
