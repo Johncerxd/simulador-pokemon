@@ -15,8 +15,7 @@ st.set_page_config(page_title="Simulador Pokémon Pro", layout="wide")
 st.markdown("""
     <style>
     .stApp {
-        background: url('https://wallpapercave.com/dwp1x/wp12939364.jpg') no-repeat center center fixed;
-        background-size: cover;
+        background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
     }
     .console-box {
         background-color: rgba(20, 25, 30, 0.92);
@@ -48,27 +47,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-if 'equipo' not in st.session_state:
-    st.session_state.equipo = ListaEnlazada()
-if 'cola_entrenadores' not in st.session_state:
-    st.session_state.cola_entrenadores = Cola()
-if 'historial_acciones' not in st.session_state:
-    st.session_state.historial_acciones = []
-if 'pagina' not in st.session_state:
-    st.session_state.pagina = "Inicio"
-if 'combate_activo' not in st.session_state:
-    st.session_state.combate_activo = False
-if 'oponente_actual' not in st.session_state:
-    st.session_state.oponente_actual = None
-if 'pokemon_jugador_actual' not in st.session_state:
-    st.session_state.pokemon_jugador_actual = None
-if 'mensaje_combate' not in st.session_state:
-    st.session_state.mensaje_combate = ""
-if 'turno' not in st.session_state:
-    st.session_state.turno = 0
-if 'datos_cargados' not in st.session_state:
-    cargar_partida()
-    st.session_state.datos_cargados = True
+ARCHIVO_EQUIPO = "equipo.csv"
+ARCHIVO_ENTRENADORES = "entrenadores.csv"
+ARCHIVO_HISTORIAL = "historial.csv"
 
 def generar_codigo():
     if st.session_state.equipo.cabeza is None:
@@ -96,10 +77,6 @@ def deshacer_accion():
     if st.session_state.historial_acciones:
         return st.session_state.historial_acciones.pop()
     return None
-
-ARCHIVO_EQUIPO = "equipo.csv"
-ARCHIVO_ENTRENADORES = "entrenadores.csv"
-ARCHIVO_HISTORIAL = "historial.csv"
 
 def guardar_partida():
     elementos = st.session_state.equipo.obtener_todos()
@@ -220,6 +197,28 @@ def huir():
     msg = "Has huido del combate."
     registrar_accion("Huir del combate")
     return msg
+
+if 'equipo' not in st.session_state:
+    st.session_state.equipo = ListaEnlazada()
+if 'cola_entrenadores' not in st.session_state:
+    st.session_state.cola_entrenadores = Cola()
+if 'historial_acciones' not in st.session_state:
+    st.session_state.historial_acciones = []
+if 'pagina' not in st.session_state:
+    st.session_state.pagina = "Inicio"
+if 'combate_activo' not in st.session_state:
+    st.session_state.combate_activo = False
+if 'oponente_actual' not in st.session_state:
+    st.session_state.oponente_actual = None
+if 'pokemon_jugador_actual' not in st.session_state:
+    st.session_state.pokemon_jugador_actual = None
+if 'mensaje_combate' not in st.session_state:
+    st.session_state.mensaje_combate = ""
+if 'turno' not in st.session_state:
+    st.session_state.turno = 0
+if 'datos_cargados' not in st.session_state:
+    cargar_partida()
+    st.session_state.datos_cargados = True
 
 with st.sidebar:
     st.image("https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg", width=200)
