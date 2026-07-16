@@ -3,54 +3,63 @@ import pandas as pd
 from modelos import Pokemon
 from estructuras import ListaEnlazada
 
-st.set_page_config(page_title="Simulador Pokémon Final", layout="wide")
+st.set_page_config(page_title="Simulador Pokémon Pro", layout="wide")
 
-# --- ESTILOS ---
+# --- FONDO DE PANTALLA ÉPICO ---
 st.markdown("""
-<style>
-.stApp { background-image: url('https://i.gifer.com/P4W4.gif'); background-size: cover; }
-.main-box { background-color: rgba(0, 0, 0, 0.8); padding: 20px; border-radius: 15px; color: white; border: 2px solid #00f2ff; }
-</style>
-""", unsafe_allow_html=True)
+    <style>
+    .stApp {
+        background: url('https://wallpapercave.com/wp/wp2567439.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+    .console-box {
+        background-color: rgba(20, 25, 30, 0.9);
+        padding: 30px;
+        border-radius: 15px;
+        border: 3px solid #ffcb05;
+        box-shadow: 0 0 20px rgba(255, 203, 5, 0.5);
+        color: #ffffff;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-# --- GESTIÓN DE ESTADO CON TUS CLASES ---
+# Inicializar sesión
 if 'equipo' not in st.session_state:
     st.session_state.equipo = ListaEnlazada()
-if 'log' not in st.session_state:
-    st.session_state.log = []
+    # Precarga de datos de ejemplo
+    st.session_state.equipo.insertar_final(Pokemon(1, "Pikachu", "Electrico", 5, 100, 100, 20, 10, 50))
+    st.session_state.equipo.insertar_final(Pokemon(2, "Charizard", "Fuego", 50, 200, 200, 100, 80, 90))
 
-st.markdown('<div class="main-box">', unsafe_allow_html=True)
-st.title("⚡ Simulador Pokémon Pro")
+# --- MENÚ AVANZADO ---
+with st.sidebar:
+    st.title("📟 POKÉ-DEX TERMINAL")
+    menu = st.radio("SISTEMA DE CONTROL", 
+                    ["Gestión de Equipo", "Búsqueda Avanzada", "Arena de Combate", "Exportación de Datos"])
 
-menu = st.sidebar.radio("Navegación", ["Arena", "Captura", "Gestión de Datos"])
+st.markdown('<div class="console-box">', unsafe_allow_html=True)
 
-# --- LÓGICA DE ARENA (USANDO MODELOS) ---
-if menu == "Arena":
-    st.subheader("⚔️ Registro de Combates")
-    if st.button("Registrar Victoria"):
-        st.session_state.log.append({"Accion": "Combate", "Resultado": "Victoria"})
-        st.success("¡Victoria en Arena registrada!")
+if menu == "Búsqueda Avanzada":
+    st.header("🔍 Búsqueda de Pokémon")
+    query = st.text_input("Ingresa el nombre del Pokémon:")
+    
+    if query:
+        # Lógica de búsqueda en tu ListaEnlazada
+        resultados = [p for p in st.session_state.equipo.obtener_todos() if query.lower() in p.nombre.lower()]
+        if resultados:
+            for p in resultados:
+                st.success(f"✅ Encontrado: {p.nombre} | Tipo: {p.tipo} | Nivel: {p.nivel}")
+        else:
+            st.error("❌ Pokémon no encontrado en tu lista.")
 
-# --- LÓGICA DE CAPTURA (USANDO ESTRUCTURAS) ---
-elif menu == "Captura":
-    st.subheader("🎯 Capturar Pokémon")
-    nombre = st.text_input("Nombre del Pokémon:")
-    if st.button("Lanzar Pokéball"):
-        nuevo_poke = Pokemon(1, nombre, "Normal", 5, 100, 100, 10, 10, 10)
-        st.session_state.equipo.insertar_final(nuevo_poke) # Uso de tu ListaEnlazada
-        st.session_state.log.append({"Accion": "Captura", "Resultado": nombre})
-        st.balloons()
-        st.success(f"¡{nombre} añadido a tu Lista Enlazada!")
+elif menu == "Gestión de Equipo":
+    st.header("🎒 Tu Equipo Pokémon")
+    data = [{"Nombre": p.nombre, "Tipo": p.tipo, "Nivel": p.nivel, "HP": p.hp} for p in st.session_state.equipo.obtener_todos()]
+    st.table(pd.DataFrame(data))
 
-# --- GESTIÓN DE DATOS ---
-elif menu == "Gestión de Datos":
-    st.subheader("📊 Estadísticas de tu Aventura")
-    if st.session_state.log:
-        df = pd.DataFrame(st.session_state.log)
-        st.table(df)
-        csv = df.to_csv(index=False).encode('utf-8')
-        st.download_button("📥 Descargar Reporte CSV", csv, "aventura_pokemon.csv", "text/csv")
-    else:
-        st.info("Aún no tienes registros.")
+elif menu == "Exportación de Datos":
+    st.header("💾 Exportar a CSV")
+    if st.button("Generar reporte final"):
+        df = pd.DataFrame([{"Nombre": p.nombre, "Tipo": p.tipo} for p in st.session_state.equipo.obtener_todos()])
+        st.download_button("Descargar CSV", df.to_csv(index=False), "equipo.csv", "text/csv")
 
 st.markdown('</div>', unsafe_allow_html=True)
