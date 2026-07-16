@@ -20,15 +20,18 @@ st.markdown("""
     .stTable, [data-testid="stTable"] { background-color: rgba(20,25,30,0.95) !important; padding: 10px; border-radius: 10px; color: white !important; }
     .stTable table, [data-testid="stTable"] table { color: white !important; }
     .stAlert { background-color: rgba(0,0,0,0.7) !important; color: white !important; }
-    .capturado { color: #00ff00; }
-    .no-capturado { color: #ff4444; }
     </style>
 """, unsafe_allow_html=True)
 
 ARCHIVO_EQUIPO = "equipo.csv"
 ARCHIVO_ENTRENADORES = "entrenadores.csv"
 ARCHIVO_HISTORIAL = "historial.csv"
-POKEMON_CSV = "deepseek_csv_20260716_2c7d55.txt"
+# Nombres posibles del archivo de Pokémon
+POKEMON_CSV_FILES = [
+    "pokemones.txt",
+    "deepseek_csv_20260716_2c7d55.txt",
+    "deepseek_csv_20260716_2c7d55.csv"
+]
 
 def generar_codigo():
     if st.session_state.equipo.cabeza is None:
@@ -126,19 +129,37 @@ def cargar_partida():
         df = pd.read_csv(ARCHIVO_HISTORIAL)
         st.session_state.historial_acciones = df['accion'].tolist()
 
-def cargar_pokedex():
-    if os.path.exists(POKEMON_CSV):
-        df = pd.read_csv(POKEMON_CSV)
-        st.session_state.pokedex = df.to_dict('records')
-    else:
-        st.session_state.pokedex = []
+def cargar_pokedex(archivo_subido=None):
+    if archivo_subido is not None:
+        try:
+            df = pd.read_csv(archivo_subido)
+            st.session_state.pokedex = df.to_dict('records')
+            st.session_state.pokedex_cargado = True
+            st.success("Archivo CSV cargado correctamente.")
+            return
+        except Exception as e:
+            st.error(f"Error al leer el archivo: {e}")
+            return
+
+    for nombre_archivo in POKEMON_CSV_FILES:
+        if os.path.exists(nombre_archivo):
+            try:
+                df = pd.read_csv(nombre_archivo)
+                st.session_state.pokedex = df.to_dict('records')
+                st.session_state.pokedex_cargado = True
+                return
+            except:
+                continue
+
+    st.session_state.pokedex = []
+    st.session_state.pokedex_cargado = False
 
 def obtener_nombres_equipo():
     return [p.nombre.lower() for p in st.session_state.equipo.obtener_todos()]
 
 def capturar_pokemon_aleatorio():
     if not st.session_state.pokedex:
-        st.warning("No hay datos de Pokémon. Asegúrate de que el archivo CSV esté presente.")
+        st.warning("No hay datos de Pokémon. Carga el archivo CSV primero.")
         return
     entry = random.choice(st.session_state.pokedex)
     codigo = generar_codigo()
@@ -232,6 +253,8 @@ def init_state():
         cargar_partida()
         cargar_pokedex()
         st.session_state.datos_cargados = True
+    if 'pokedex_cargado' not in st.session_state:
+        st.session_state.pokedex_cargado = False
 
 init_state()
 
@@ -373,27 +396,32 @@ elif st.session_state.pagina == "Gestion de Equipo":
                     else:
                         st.error("Nombre y tipo son obligatorios.")
 
-    if 'pokedex' in st.session_state and st.session_state.pokedex:
-        with st.expander("📖 Pokedex - Pokemon disponibles", expanded=False):
-            total = len(st.session_state.pokedex)
-            nombres_equipo = obtener_nombres_equipo()
-            capturados_count = 0
-            data = []
-            for entry in st.session_state.pokedex:
-                estado = "✅" if entry['name'].lower() in nombres_equipo else "❌"
-                if entry['name'].lower() in nombres_equipo:
-                    capturados_count += 1
-                data.append({
-                    "ID": entry['id'],
-                    "Nombre": entry['name'],
-                    "Tipo": entry['types'],
-                    "Estado": estado
-                })
-            st.write(f"**Capturados:** {capturados_count} / {total}")
-            df_pokedex = pd.DataFrame(data)
-            st.dataframe(df_pokedex, use_container_width=True)
+    st.subheader("📖 Pokedex")
+    if not st.session_state.pokedex_cargado:
+        st.warning("No se encontró el archivo CSV con los datos de Pokémon.")
+        with st.expander("Cargar archivo CSV manualmente"):
+            archivo = st.file_uploader("Sube tu archivo CSV", type=["csv", "txt"])
+            if archivo is not None:
+                cargar_pokedex(archivo)
+                st.rerun()
     else:
-        st.info("No se encontró el archivo CSV con los datos de Pokémon.")
+        total = len(st.session_state.pokedex)
+        nombres_equipo = obtener_nombres_equipo()
+        capturados_count = 0
+        data = []
+        for entry in st.session_state.pokedex:
+            estado = "✅" if entry['name'].lower() in nombres_equipo else "❌"
+            if entry['name'].lower() in nombres_equipo:
+                capturados_count += 1
+            data.append({
+                "ID": entry['id'],
+                "Nombre": entry['name'],
+                "Tipo": entry['types'],
+                "Estado": estado
+            })
+        st.write(f"**Capturados:** {capturados_count} / {total}")
+        df_pokedex = pd.DataFrame(data)
+        st.dataframe(df_pokedex, use_container_width=True)
 
 elif st.session_state.pagina == "Combate":
     st.header("⚔️ Combate")
