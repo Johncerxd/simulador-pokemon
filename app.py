@@ -324,7 +324,7 @@ if st.session_state.pagina == "Inicio":
         st.info("Tu equipo esta vacio. Captura algunos Pokemon en 'Gestion de Equipo'.")
 
 elif st.session_state.pagina == "Gestion de Equipo":
-    st.header("🎒 Gestion de Equipo")
+    st.header("🎒 Equipo Pokemon")
 
     elementos = st.session_state.equipo.obtener_todos()
     if elementos:
@@ -391,7 +391,7 @@ elif st.session_state.pagina == "Gestion de Equipo":
     st.subheader("➕ Capturar Pokemon")
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🎲 Capturar Pokemon Aleatorio del CSV"):
+        if st.button("🎲 Capturar Pokemon Aleatorio "):
             capturar_pokemon_aleatorio()
     with col2:
         with st.expander("✏️ Captura manual", expanded=False):
