@@ -1,101 +1,101 @@
-id,name,types,level,hp,attack,defense,speed
-1,Bulbasaur,grass/poison,50,45,49,49,45
-2,Ivysaur,grass/poison,50,60,62,63,60
-3,Venusaur,grass/poison,50,80,82,83,80
-4,Charmander,fire,50,39,52,43,65
-5,Charmeleon,fire,50,58,64,58,80
-6,Charizard,fire/flying,50,78,84,78,100
-7,Squirtle,water,50,44,48,65,43
-8,Wartortle,water,50,59,63,80,58
-9,Blastoise,water,50,79,83,100,78
-10,Caterpie,bug,50,45,30,35,45
-11,Metapod,bug,50,50,20,55,30
-12,Butterfree,bug/flying,50,60,45,50,70
-13,Weedle,bug/poison,50,40,35,30,50
-14,Kakuna,bug/poison,50,45,25,50,35
-15,Beedrill,bug/poison,50,65,90,40,75
-16,Pidgey,normal/flying,50,40,45,40,56
-17,Pidgeotto,normal/flying,50,63,60,55,71
-18,Pidgeot,normal/flying,50,83,80,75,101
-19,Rattata,normal,50,30,56,35,72
-20,Raticate,normal,50,55,81,60,97
-21,Spearow,normal/flying,50,40,60,30,70
-22,Fearow,normal/flying,50,65,90,65,100
-23,Ekans,poison,50,35,60,44,55
-24,Arbok,poison,50,60,85,69,80
-25,Pikachu,electric,50,35,55,40,90
-26,Raichu,electric,50,60,90,55,110
-27,Sandshrew,ground,50,50,75,85,40
-28,Sandslash,ground,50,75,100,110,65
-29,Nidoran♀,poison,50,55,47,52,41
-30,Nidorina,poison,50,70,62,67,56
-31,Nidoqueen,poison/ground,50,90,92,87,76
-32,Nidoran♂,poison,50,46,57,40,50
-33,Nidorino,poison,50,61,72,57,65
-34,Nidoking,poison/ground,50,81,102,77,85
-35,Clefairy,fairy,50,70,45,48,35
-36,Clefable,fairy,50,95,70,73,60
-37,Vulpix,fire,50,38,41,40,65
-38,Ninetales,fire,50,73,76,75,100
-39,Jigglypuff,normal/fairy,50,115,45,20,20
-40,Wigglytuff,normal/fairy,50,140,70,45,45
-41,Zubat,poison/flying,50,40,45,35,55
-42,Golbat,poison/flying,50,75,80,70,90
-43,Oddish,grass/poison,50,45,50,55,30
-44,Gloom,grass/poison,50,60,65,70,40
-45,Vileplume,grass/poison,50,75,80,85,50
-46,Paras,bug/grass,50,35,70,55,25
-47,Parasect,bug/grass,50,60,95,80,30
-48,Venonat,bug/poison,50,60,55,50,45
-49,Venomoth,bug/poison,50,70,65,60,90
-50,Diglett,ground,50,10,55,25,95
-51,Dugtrio,ground,50,35,80,50,120
-52,Meowth,normal,50,40,45,35,90
-53,Persian,normal,50,65,70,60,115
-54,Psyduck,water,50,50,52,48,55
-55,Golduck,water,50,80,82,78,85
-56,Mankey,fighting,50,40,80,35,70
-57,Primeape,fighting,50,65,105,60,95
-58,Growlithe,fire,50,55,70,45,60
-59,Arcanine,fire,50,90,110,80,95
-60,Poliwag,water,50,40,50,40,90
-61,Poliwhirl,water,50,65,65,65,90
-62,Poliwrath,water/fighting,50,90,95,95,70
-63,Abra,psychic,50,25,20,15,90
-64,Kadabra,psychic,50,40,35,30,105
-65,Alakazam,psychic,50,55,50,45,120
-66,Machop,fighting,50,70,80,50,35
-67,Machoke,fighting,50,80,100,70,45
-68,Machamp,fighting,50,90,130,80,55
-69,Bellsprout,grass/poison,50,50,75,35,40
-70,Weepinbell,grass/poison,50,65,90,50,55
-71,Victreebel,grass/poison,50,80,105,65,70
-72,Tentacool,water/poison,50,40,40,35,70
-73,Tentacruel,water/poison,50,80,70,65,100
-74,Geodude,rock/ground,50,40,80,100,20
-75,Graveler,rock/ground,50,55,95,115,35
-76,Golem,rock/ground,50,80,120,130,45
-77,Ponyta,fire,50,50,85,55,90
-78,Rapidash,fire,50,65,100,70,105
-79,Slowpoke,water/psychic,50,90,65,65,15
-80,Slowbro,water/psychic,50,95,75,110,30
-81,Magnemite,electric/steel,50,25,35,70,45
-82,Magneton,electric/steel,50,50,60,95,70
-83,Farfetch'd,normal/flying,50,52,65,55,60
-84,Doduo,normal/flying,50,35,85,45,75
-85,Dodrio,normal/flying,50,60,110,70,100
-86,Seel,water,50,65,45,55,45
-87,Dewgong,water/ice,50,90,70,80,70
-88,Grimer,poison,50,80,80,50,25
-89,Muk,poison,50,105,105,75,50
-90,Shellder,water,50,30,65,100,40
-91,Cloyster,water/ice,50,50,95,180,70
-92,Gastly,ghost/poison,50,30,35,30,80
-93,Haunter,ghost/poison,50,45,50,45,95
-94,Gengar,ghost/poison,50,60,65,60,110
-95,Onix,rock/ground,50,35,45,160,70
-96,Drowzee,psychic,50,60,48,45,42
-97,Hypno,psychic,50,85,73,70,67
-98,Krabby,water,50,30,105,90,50
-99,Kingler,water,50,55,130,115,75
-100,Voltorb,electric,50,40,30,50,100
+ id       name           types  level  hp  attack  defense  speed
+  1  Bulbasaur   planta/veneno     50  45      49       49     45
+  2    Ivysaur   planta/veneno     50  60      62       63     60
+  3   Venusaur   planta/veneno     50  80      82       83     80
+  4 Charmander           fuego     50  39      52       43     65
+  5 Charmeleon           fuego     50  58      64       58     80
+  6  Charizard   fuego/volador     50  78      84       78    100
+  7   Squirtle            agua     50  44      48       65     43
+  8  Wartortle            agua     50  59      63       80     58
+  9  Blastoise            agua     50  79      83      100     78
+ 10   Caterpie           bicho     50  45      30       35     45
+ 11    Metapod           bicho     50  50      20       55     30
+ 12 Butterfree   bicho/volador     50  60      45       50     70
+ 13     Weedle    bicho/veneno     50  40      35       30     50
+ 14     Kakuna    bicho/veneno     50  45      25       50     35
+ 15   Beedrill    bicho/veneno     50  65      90       40     75
+ 16     Pidgey  normal/volador     50  40      45       40     56
+ 17  Pidgeotto  normal/volador     50  63      60       55     71
+ 18    Pidgeot  normal/volador     50  83      80       75    101
+ 19    Rattata          normal     50  30      56       35     72
+ 20   Raticate          normal     50  55      81       60     97
+ 21    Spearow  normal/volador     50  40      60       30     70
+ 22     Fearow  normal/volador     50  65      90       65    100
+ 23      Ekans          veneno     50  35      60       44     55
+ 24      Arbok          veneno     50  60      85       69     80
+ 25    Pikachu       eléctrico     50  35      55       40     90
+ 26     Raichu       eléctrico     50  60      90       55    110
+ 27  Sandshrew          tierra     50  50      75       85     40
+ 28  Sandslash          tierra     50  75     100      110     65
+ 29   Nidoran♀          veneno     50  55      47       52     41
+ 30   Nidorina          veneno     50  70      62       67     56
+ 31  Nidoqueen   veneno/tierra     50  90      92       87     76
+ 32   Nidoran♂          veneno     50  46      57       40     50
+ 33   Nidorino          veneno     50  61      72       57     65
+ 34   Nidoking   veneno/tierra     50  81     102       77     85
+ 35   Clefairy            hada     50  70      45       48     35
+ 36   Clefable            hada     50  95      70       73     60
+ 37     Vulpix           fuego     50  38      41       40     65
+ 38  Ninetales           fuego     50  73      76       75    100
+ 39 Jigglypuff     normal/hada     50 115      45       20     20
+ 40 Wigglytuff     normal/hada     50 140      70       45     45
+ 41      Zubat  veneno/volador     50  40      45       35     55
+ 42     Golbat  veneno/volador     50  75      80       70     90
+ 43     Oddish   planta/veneno     50  45      50       55     30
+ 44      Gloom   planta/veneno     50  60      65       70     40
+ 45  Vileplume   planta/veneno     50  75      80       85     50
+ 46      Paras    bicho/planta     50  35      70       55     25
+ 47   Parasect    bicho/planta     50  60      95       80     30
+ 48    Venonat    bicho/veneno     50  60      55       50     45
+ 49   Venomoth    bicho/veneno     50  70      65       60     90
+ 50    Diglett          tierra     50  10      55       25     95
+ 51    Dugtrio          tierra     50  35      80       50    120
+ 52     Meowth          normal     50  40      45       35     90
+ 53    Persian          normal     50  65      70       60    115
+ 54    Psyduck            agua     50  50      52       48     55
+ 55    Golduck            agua     50  80      82       78     85
+ 56     Mankey           lucha     50  40      80       35     70
+ 57   Primeape           lucha     50  65     105       60     95
+ 58  Growlithe           fuego     50  55      70       45     60
+ 59   Arcanine           fuego     50  90     110       80     95
+ 60    Poliwag            agua     50  40      50       40     90
+ 61  Poliwhirl            agua     50  65      65       65     90
+ 62  Poliwrath      agua/lucha     50  90      95       95     70
+ 63       Abra        psíquico     50  25      20       15     90
+ 64    Kadabra        psíquico     50  40      35       30    105
+ 65   Alakazam        psíquico     50  55      50       45    120
+ 66     Machop           lucha     50  70      80       50     35
+ 67    Machoke           lucha     50  80     100       70     45
+ 68    Machamp           lucha     50  90     130       80     55
+ 69 Bellsprout   planta/veneno     50  50      75       35     40
+ 70 Weepinbell   planta/veneno     50  65      90       50     55
+ 71 Victreebel   planta/veneno     50  80     105       65     70
+ 72  Tentacool     agua/veneno     50  40      40       35     70
+ 73 Tentacruel     agua/veneno     50  80      70       65    100
+ 74    Geodude     roca/tierra     50  40      80      100     20
+ 75   Graveler     roca/tierra     50  55      95      115     35
+ 76      Golem     roca/tierra     50  80     120      130     45
+ 77     Ponyta           fuego     50  50      85       55     90
+ 78   Rapidash           fuego     50  65     100       70    105
+ 79   Slowpoke   agua/psíquico     50  90      65       65     15
+ 80    Slowbro   agua/psíquico     50  95      75      110     30
+ 81  Magnemite eléctrico/acero     50  25      35       70     45
+ 82   Magneton eléctrico/acero     50  50      60       95     70
+ 83 Farfetch'd  normal/volador     50  52      65       55     60
+ 84      Doduo  normal/volador     50  35      85       45     75
+ 85     Dodrio  normal/volador     50  60     110       70    100
+ 86       Seel            agua     50  65      45       55     45
+ 87    Dewgong      agua/hielo     50  90      70       80     70
+ 88     Grimer          veneno     50  80      80       50     25
+ 89        Muk          veneno     50 105     105       75     50
+ 90   Shellder            agua     50  30      65      100     40
+ 91   Cloyster      agua/hielo     50  50      95      180     70
+ 92     Gastly fantasma/veneno     50  30      35       30     80
+ 93    Haunter fantasma/veneno     50  45      50       45     95
+ 94     Gengar fantasma/veneno     50  60      65       60    110
+ 95       Onix     roca/tierra     50  35      45      160     70
+ 96    Drowzee        psíquico     50  60      48       45     42
+ 97      Hypno        psíquico     50  85      73       70     67
+ 98     Krabby            agua     50  30     105       90     50
+ 99    Kingler            agua     50  55     130      115     75
+100    Voltorb       eléctrico     50  40      30       50    100
