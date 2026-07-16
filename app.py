@@ -8,19 +8,22 @@ st.set_page_config(page_title="Simulador Pokémon Final", layout="wide")
 st.markdown("""
     <style>
     .stApp {
-        background-image: url('https://motionbgs.com/may-riding-a-bike-pokemon-emerald');
+        background-image: url('https://i.gifer.com/P4W4.gif'); /* He buscado un GIF equivalente para tu proyecto */
         background-size: cover;
         background-position: center;
+        background-attachment: fixed;
     }
-    .css-1r6slp0 { background-color: rgba(255, 255, 255, 0.8) !important; }
-    .main-box {
-        background-color: rgba(0, 0, 0, 0.7);
-        padding: 20px;
-        border-radius: 15px;
-        color: white;
-        border: 2px solid #00f2ff;
+    /* Esta capa mejora la legibilidad del texto sobre el GIF */
+    .stApp::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.4); 
+        z-index: 0;
     }
     </style>
+    """, unsafe_allow_html=True)
     """, unsafe_allow_html=True)
 
 # Inicializar sesión
