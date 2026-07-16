@@ -8,7 +8,7 @@ st.set_page_config(page_title="Simulador Pokémon Final", layout="wide")
 st.markdown("""
     <style>
     .stApp {
-        background-image: url('https://wallpaperaccess.com/full/1569426.jpg');
+        background-image: url('https://motionbgs.com/may-riding-a-bike-pokemon-emerald');
         background-size: cover;
         background-position: center;
     }
