@@ -1,46 +1,54 @@
 import streamlit as st
-from modelos import Pokemon
-from estructuras import ListaEnlazada
+import requests
+from streamlit_lottie import st_lottie
+import plotly.express as px
+import pandas as pd
 
-st.set_page_config(page_title="Menú Pokémon", layout="centered")
+# Configuración inicial
+st.set_page_config(page_title="Simulador Pokémon Pro", layout="wide")
 
-# --- ESTILOS ---
-st.markdown("""
-    <style>
-    .menu-box {
-        border: 2px solid #00f2ff;
-        padding: 20px;
-        border-radius: 10px;
-        background-color: #1a1a1a;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+# Función para cargar animaciones Lottie (Pokeball girando)
+def load_lottieurl(url: str):
+    r = requests.get(url)
+    if r.status_code != 200: return None
+    return r.json()
 
-# --- MENÚ PRINCIPAL ---
-st.markdown('<div class="menu-box">', unsafe_allow_html=True)
-st.markdown("<h2 style='text-align: center; color: #e6ff00;'>MENÚ PRINCIPAL</h2>", unsafe_allow_html=True)
+lottie_poke = load_lottieurl("https://assets9.lottiefiles.com/packages/lf20_6u84k2.json")
 
-opcion = st.radio("Selecciona una acción:", [
-    "1. Ver Equipo Pokémon",
-    "2. Capturar Pokémon",
-    "3. Liberar Pokémon",
-    "4. Ordenar Equipo",
-    "5. Ver Gimnasios Disponibles",
-    "6. Desafiar Líder de Gimnasio",
-    "7. Ver Historial de Combate",
-    "8. Estado del Entrenador",
-    "9. Guardar y Salir"
-])
-st.markdown('</div>', unsafe_allow_html=True)
+# --- INTERFAZ GRÁFICA ---
+st.markdown("<h1 style='text-align: center; color: #ff0000;'>⚡ Simulador Pokémon Pro ⚡</h1>", unsafe_allow_html=True)
 
-# --- LÓGICA DE INGRESO ---
-if st.button("Ejecutar Acción"):
-    if "1." in opcion:
-        st.write("Cargando equipo...")
-    elif "2." in opcion:
-        with st.form("capturar_form"):
-            nombre = st.text_input("Nombre del Pokémon a capturar:")
-            if st.form_submit_button("Lanzar Pokéball"):
-                st.success(f"¡Has capturado a {nombre}!")
-    elif "9." in opcion:
-        st.warning("Guardando progreso... ¡Hasta pronto!")
+col_anim, col_menu = st.columns([1, 2])
+
+with col_anim:
+    if lottie_poke:
+        st_lottie(lottie_poke, height=200, key="pokeball")
+
+with col_menu:
+    # Menú mejorado con selectbox animado
+    opcion = st.selectbox("Selecciona una acción del sistema:", [
+        "Ver Equipo Pokémon",
+        "Capturar Pokémon",
+        "Ver Estadísticas de Poder",
+        "Guardar y Salir"
+    ])
+
+# --- LÓGICA CON ANIMACIONES Y GRÁFICOS ---
+if opcion == "Ver Estadísticas de Poder":
+    st.subheader("📊 Gráfico de Rendimiento")
+    # Datos de ejemplo (puedes reemplazar con los de tu equipo)
+    data = pd.DataFrame({
+        'Pokémon': ['Pikachu', 'Bulbasaur', 'Charmander'],
+        'Poder': [85, 70, 90]
+    })
+    fig = px.bar(data, x='Pokémon', y='Poder', color='Poder', 
+                 color_continuous_scale='Viridis', template="plotly_dark")
+    st.plotly_chart(fig, use_container_width=True)
+
+elif opcion == "Capturar Pokémon":
+    with st.form("cap"):
+        nombre = st.text_input("Nombre del Pokémon:")
+        if st.form_submit_button("¡Lanzar Pokéball!"):
+            with st.spinner('Capturando...'):
+                st.balloons() # Animación de globos al capturar
+                st.success(f"¡{nombre} fue capturado exitosamente!")
