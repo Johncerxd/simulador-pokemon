@@ -14,42 +14,14 @@ st.set_page_config(page_title="Simulador Pokémon Pro", layout="wide")
 
 st.markdown("""
     <style>
-    .stApp {
-        background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-    }
-    .console-box {
-        background-color: rgba(20, 25, 30, 0.92);
-        padding: 30px;
-        border-radius: 15px;
-        border: 3px solid #00f2ff;
-        color: #ffffff;
-    }
-    .stat-card {
-        background-color: rgba(0, 0, 0, 0.6);
-        border-radius: 10px;
-        padding: 15px;
-        text-align: center;
-        border: 1px solid #00f2ff;
-    }
-    .stTable, [data-testid="stTable"] {
-        background-color: rgba(20, 25, 30, 0.95) !important;
-        padding: 10px;
-        border-radius: 10px;
-        color: white !important;
-    }
-    .stTable table, [data-testid="stTable"] table {
-        color: white !important;
-    }
-    .stAlert {
-        background-color: rgba(0,0,0,0.7) !important;
-        color: white !important;
-    }
-    .capturado {
-        color: #00ff00;
-    }
-    .no-capturado {
-        color: #ff4444;
-    }
+    .stApp { background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); }
+    .console-box { background-color: rgba(20,25,30,0.92); padding: 30px; border-radius: 15px; border: 3px solid #00f2ff; color: #ffffff; }
+    .stat-card { background-color: rgba(0,0,0,0.6); border-radius: 10px; padding: 15px; text-align: center; border: 1px solid #00f2ff; }
+    .stTable, [data-testid="stTable"] { background-color: rgba(20,25,30,0.95) !important; padding: 10px; border-radius: 10px; color: white !important; }
+    .stTable table, [data-testid="stTable"] table { color: white !important; }
+    .stAlert { background-color: rgba(0,0,0,0.7) !important; color: white !important; }
+    .capturado { color: #00ff00; }
+    .no-capturado { color: #ff4444; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -158,28 +130,17 @@ def cargar_pokedex():
     if os.path.exists(POKEMON_CSV):
         df = pd.read_csv(POKEMON_CSV)
         st.session_state.pokedex = df.to_dict('records')
-        # Inicializar capturados si no existe
-        if 'capturados' not in st.session_state:
-            st.session_state.capturados = set()
-        # Sincronizar capturados con el equipo actual (al cargar)
-        if 'equipo' in st.session_state:
-            for p in st.session_state.equipo.obtener_todos():
-                # Buscar el id en pokedex por nombre (asumiendo nombres únicos)
-                for entry in st.session_state.pokedex:
-                    if entry['name'].lower() == p.nombre.lower():
-                        st.session_state.capturados.add(entry['id'])
-                        break
     else:
         st.session_state.pokedex = []
-        st.session_state.capturados = set()
+
+def obtener_nombres_equipo():
+    return [p.nombre.lower() for p in st.session_state.equipo.obtener_todos()]
 
 def capturar_pokemon_aleatorio():
     if not st.session_state.pokedex:
         st.warning("No hay datos de Pokémon. Asegúrate de que el archivo CSV esté presente.")
         return
-    # Elegir un Pokémon aleatorio de la pokedex
     entry = random.choice(st.session_state.pokedex)
-    # Crear el objeto Pokemon
     codigo = generar_codigo()
     nuevo = Pokemon(
         codigo=codigo,
@@ -193,7 +154,6 @@ def capturar_pokemon_aleatorio():
         velocidad=entry['speed']
     )
     st.session_state.equipo.insertar_final(nuevo)
-    st.session_state.capturados.add(entry['id'])
     registrar_accion(f"Capturado aleatorio {entry['name']} (código {codigo})")
     st.success(f"¡{entry['name']} capturado con éxito!")
     st.rerun()
@@ -249,28 +209,31 @@ def huir():
     registrar_accion("Huir del combate")
     return msg
 
-if 'equipo' not in st.session_state:
-    st.session_state.equipo = ListaEnlazada()
-if 'cola_entrenadores' not in st.session_state:
-    st.session_state.cola_entrenadores = Cola()
-if 'historial_acciones' not in st.session_state:
-    st.session_state.historial_acciones = []
-if 'pagina' not in st.session_state:
-    st.session_state.pagina = "Inicio"
-if 'combate_activo' not in st.session_state:
-    st.session_state.combate_activo = False
-if 'oponente_actual' not in st.session_state:
-    st.session_state.oponente_actual = None
-if 'pokemon_jugador_actual' not in st.session_state:
-    st.session_state.pokemon_jugador_actual = None
-if 'mensaje_combate' not in st.session_state:
-    st.session_state.mensaje_combate = ""
-if 'turno' not in st.session_state:
-    st.session_state.turno = 0
-if 'datos_cargados' not in st.session_state:
-    cargar_partida()
-    cargar_pokedex()
-    st.session_state.datos_cargados = True
+def init_state():
+    if 'equipo' not in st.session_state:
+        st.session_state.equipo = ListaEnlazada()
+    if 'cola_entrenadores' not in st.session_state:
+        st.session_state.cola_entrenadores = Cola()
+    if 'historial_acciones' not in st.session_state:
+        st.session_state.historial_acciones = []
+    if 'pagina' not in st.session_state:
+        st.session_state.pagina = "Inicio"
+    if 'combate_activo' not in st.session_state:
+        st.session_state.combate_activo = False
+    if 'oponente_actual' not in st.session_state:
+        st.session_state.oponente_actual = None
+    if 'pokemon_jugador_actual' not in st.session_state:
+        st.session_state.pokemon_jugador_actual = None
+    if 'mensaje_combate' not in st.session_state:
+        st.session_state.mensaje_combate = ""
+    if 'turno' not in st.session_state:
+        st.session_state.turno = 0
+    if 'datos_cargados' not in st.session_state:
+        cargar_partida()
+        cargar_pokedex()
+        st.session_state.datos_cargados = True
+
+init_state()
 
 with st.sidebar:
     st.image("https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg", width=200)
@@ -384,14 +347,12 @@ elif st.session_state.pagina == "Gestion de Equipo":
     else:
         st.info("Equipo vacio. Captura Pokemon usando las opciones de abajo.")
 
-    # Sección de captura
     st.subheader("➕ Capturar Pokemon")
     col1, col2 = st.columns(2)
     with col1:
         if st.button("🎲 Capturar Pokemon Aleatorio del CSV"):
             capturar_pokemon_aleatorio()
     with col2:
-        # Captura manual (existente)
         with st.expander("✏️ Captura manual", expanded=False):
             with st.form("captura_manual"):
                 nombre = st.text_input("Nombre")
@@ -412,26 +373,27 @@ elif st.session_state.pagina == "Gestion de Equipo":
                     else:
                         st.error("Nombre y tipo son obligatorios.")
 
-    # Pokedex
-    with st.expander("📖 Pokedex - Pokemon disponibles", expanded=False):
-        if st.session_state.pokedex:
+    if 'pokedex' in st.session_state and st.session_state.pokedex:
+        with st.expander("📖 Pokedex - Pokemon disponibles", expanded=False):
             total = len(st.session_state.pokedex)
-            capturados = len(st.session_state.capturados)
-            st.write(f"**Capturados:** {capturados} / {total}")
-            # Crear tabla con estado
+            nombres_equipo = obtener_nombres_equipo()
+            capturados_count = 0
             data = []
             for entry in st.session_state.pokedex:
-                estado = "✅" if entry['id'] in st.session_state.capturados else "❌"
+                estado = "✅" if entry['name'].lower() in nombres_equipo else "❌"
+                if entry['name'].lower() in nombres_equipo:
+                    capturados_count += 1
                 data.append({
                     "ID": entry['id'],
                     "Nombre": entry['name'],
                     "Tipo": entry['types'],
                     "Estado": estado
                 })
+            st.write(f"**Capturados:** {capturados_count} / {total}")
             df_pokedex = pd.DataFrame(data)
             st.dataframe(df_pokedex, use_container_width=True)
-        else:
-            st.warning("No se encontró el archivo CSV con los datos de Pokémon.")
+    else:
+        st.info("No se encontró el archivo CSV con los datos de Pokémon.")
 
 elif st.session_state.pagina == "Combate":
     st.header("⚔️ Combate")
