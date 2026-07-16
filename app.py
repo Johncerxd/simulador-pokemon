@@ -2,42 +2,45 @@ import streamlit as st
 from modelos import Pokemon
 from estructuras import ListaEnlazada
 
-st.set_page_config(page_title="Simulador Pokémon Pro", layout="wide")
+st.set_page_config(page_title="Menú Pokémon", layout="centered")
 
-# Inicialización de estado
-if 'equipo' not in st.session_state:
-    st.session_state.equipo = ListaEnlazada()
-    st.session_state.equipo.insertar_final(Pokemon(1, "Pikachu", "Electrico", 5, 100, 100, 20, 10, 50))
+# --- ESTILOS ---
+st.markdown("""
+    <style>
+    .menu-box {
+        border: 2px solid #00f2ff;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #1a1a1a;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-# --- MENÚ AVANZADO (SIDEBAR) ---
-with st.sidebar:
-    st.title("⚙️ Panel de Control")
-    st.markdown("---")
-    menu = st.radio("Navegación", ["Combate", "Gestionar Equipo", "Estadísticas"])
-    st.markdown("---")
-    if st.button("🔄 Reiniciar Simulación"):
-        st.session_state.equipo = ListaEnlazada()
-        st.rerun()
+# --- MENÚ PRINCIPAL ---
+st.markdown('<div class="menu-box">', unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center; color: #e6ff00;'>MENÚ PRINCIPAL</h2>", unsafe_allow_html=True)
 
-# --- LÓGICA DE NAVEGACIÓN ---
-if menu == "Combate":
-    st.title("⚔️ Arena de Batalla")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.subheader("Tu Equipo")
-        for p in st.session_state.equipo.obtener_todos():
-            st.metric(label=p.nombre, value=f"{p.hp} HP", delta=f"Nivel {p.nivel}")
-            st.progress(p.hp / p.hp_maximo)
+opcion = st.radio("Selecciona una acción:", [
+    "1. Ver Equipo Pokémon",
+    "2. Capturar Pokémon",
+    "3. Liberar Pokémon",
+    "4. Ordenar Equipo",
+    "5. Ver Gimnasios Disponibles",
+    "6. Desafiar Líder de Gimnasio",
+    "7. Ver Historial de Combate",
+    "8. Estado del Entrenador",
+    "9. Guardar y Salir"
+])
+st.markdown('</div>', unsafe_allow_html=True)
 
-elif menu == "Gestionar Equipo":
-    st.title("🎒 Gestión de Pokémon")
-    st.info("Aquí puedes administrar tus criaturas.")
-    if st.button("✨ Curar todo el equipo"):
-        for p in st.session_state.equipo.obtener_todos():
-            p.restaurar_hp()
-        st.success("¡Salud restaurada!")
-        st.rerun()
-
-elif menu == "Estadísticas":
-    st.title("📊 Análisis de Datos")
-    st.bar_chart({p.nombre: p.hp for p in st.session_state.equipo.obtener_todos()})
+# --- LÓGICA DE INGRESO ---
+if st.button("Ejecutar Acción"):
+    if "1." in opcion:
+        st.write("Cargando equipo...")
+    elif "2." in opcion:
+        with st.form("capturar_form"):
+            nombre = st.text_input("Nombre del Pokémon a capturar:")
+            if st.form_submit_button("Lanzar Pokéball"):
+                st.success(f"¡Has capturado a {nombre}!")
+    elif "9." in opcion:
+        st.warning("Guardando progreso... ¡Hasta pronto!")
