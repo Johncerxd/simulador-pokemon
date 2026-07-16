@@ -38,7 +38,7 @@ menu = st.sidebar.radio("SISTEMA DE CONTROL",
 
 # 1. GESTIÓN DE EQUIPO
 if menu == "Gestión de Equipo":
-    st.header("🎒 Registrar nuevo Pokémon")
+    st.header("Registrar nuevo Pokémon")
     with st.form("nuevo_pokemon"):
         nombre = st.text_input("Nombre:")
         tipo = st.text_input("Tipo:")
