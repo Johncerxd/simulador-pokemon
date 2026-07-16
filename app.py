@@ -32,7 +32,7 @@ class Pokemon:
         self.nivel = nivel
         self.hp = hp
 
-# --- CONFIGURACIÓN E INTERFAZ ---
+# --- CONFIGURACIÓN ---
 st.set_page_config(page_title="Simulador Pokémon Pro", layout="wide")
 
 st.markdown("""
@@ -65,27 +65,34 @@ if st.session_state.pagina == "Gestión de Equipo":
     if elementos:
         df_equipo = pd.DataFrame([{"Nombre": p.nombre, "Tipo": p.tipo, "Nivel": p.nivel, "HP": p.hp} for p in elementos])
         
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         busqueda = col1.text_input("🔍 Buscar por Nombre")
         tipo_filtro = col2.selectbox("🏷️ Filtrar por Tipo", ["Todos"] + list(df_equipo["Tipo"].unique()))
         
-        # Validar rango para el slider
-        min_hp, max_hp = int(df_equipo["HP"].min()), int(df_equipo["HP"].max())
-        hp_filtro = col3.slider("❤️ HP Mínimo", min_hp, max_hp, min_hp) if min_hp != max_hp else min_hp
+        col3, col4 = st.columns(2)
+        nivel_min, nivel_max = int(df_equipo["Nivel"].min()), int(df_equipo["Nivel"].max())
+        nivel_rango = col3.slider("📊 Rango de Nivel", nivel_min, nivel_max, (nivel_min, nivel_max))
         
-        # Filtrado
-        df_f = df_equipo[df_equipo["Nombre"].str.contains(busqueda, case=False)]
+        hp_min, hp_max = int(df_equipo["HP"].min()), int(df_equipo["HP"].max())
+        hp_rango = col4.slider("❤️ Rango de HP", hp_min, hp_max, (hp_min, hp_max))
+        
+        # Filtrado avanzado
+        df_f = df_equipo[
+            (df_equipo["Nombre"].str.contains(busqueda, case=False)) &
+            (df_equipo["Nivel"].between(nivel_rango[0], nivel_rango[1])) &
+            (df_equipo["HP"].between(hp_rango[0], hp_rango[1]))
+        ]
         if tipo_filtro != "Todos": df_f = df_f[df_f["Tipo"] == tipo_filtro]
-        df_f = df_f[df_f["HP"] >= hp_filtro]
         
         st.table(df_f)
     else: st.info("Equipo vacío.")
 
 elif st.session_state.pagina == "Captura":
     with st.form("cap"):
-        n = st.text_input("Nombre"); t = st.text_input("Tipo"); hp = st.number_input("HP", 1, 999)
+        n = st.text_input("Nombre"); t = st.text_input("Tipo")
+        nivel = st.number_input("Nivel", 1, 100, 5); hp = st.number_input("HP", 1, 999, 100)
         if st.form_submit_button("Lanzar"):
-            st.session_state.equipo.insertar_final(Pokemon(n, t, 5, hp))
+            st.session_state.equipo.insertar_final(Pokemon(n, t, nivel, hp))
             st.rerun()
 
 elif st.session_state.pagina == "Exportación":
