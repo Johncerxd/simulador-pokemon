@@ -674,7 +674,8 @@ elif st.session_state.pagina == "Historial":
         st.info("Aun no se han registrado acciones.")
 
 elif st.session_state.pagina == "Persistencia":
-    st.header("💾 Persistencia de Datos")
+    st.header("💾 Creador de entrenador
+    ")
 
     col1, col2 = st.columns(2)
     if col1.button("💿 Guardar partida"):
