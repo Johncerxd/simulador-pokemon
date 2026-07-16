@@ -23,11 +23,21 @@ st.markdown("""
     .logro-box {
         background: linear-gradient(135deg, #f7971e, #ffd200);
         color: #1a1a2e;
-        padding: 15px;
-        border-radius: 10px;
-        border: 3px solid #ffd700;
-        box-shadow: 0 0 20px #ffd700;
-        margin: 10px 0;
+        padding: 20px;
+        border-radius: 15px;
+        border: 4px solid #ffd700;
+        box-shadow: 0 0 30px #ffd700;
+        margin: 20px 0;
+        font-weight: bold;
+        text-align: center;
+    }
+    .logro-box h2 {
+        margin: 0;
+        font-size: 2em;
+    }
+    .logro-box .detalles {
+        font-size: 1.1em;
+        margin-top: 10px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -69,38 +79,6 @@ def deshacer_accion():
     if st.session_state.historial_acciones:
         return st.session_state.historial_acciones.pop()
     return None
-
-def mostrar_logro_captura(pokemon):
-    """Muestra un logro por captura de Pokémon."""
-    mensaje = f"""
-    🏆 **¡Nuevo Pokémon capturado!**  
-    **{pokemon.nombre}**  
-    - Tipo: {pokemon.tipo}  
-    - Nivel: {pokemon.nivel}  
-    - HP: {pokemon.hp}  
-    - Ataque: {pokemon.ataque}  
-    - Defensa: {pokemon.defensa}  
-    - Velocidad: {pokemon.velocidad}  
-    """
-    st.toast("🎉 ¡Logro desbloqueado: Nuevo Pokémon!", icon="🏆")
-    st.success(f"✅ {pokemon.nombre} añadido a tu equipo.")
-    st.markdown(f'<div class="logro-box">{mensaje}</div>', unsafe_allow_html=True)
-
-def mostrar_logro_victoria(pokemon):
-    """Muestra un logro por derrotar a un Pokémon."""
-    mensaje = f"""
-    ⚔️ **¡Victoria en combate!**  
-    Has derrotado a **{pokemon.nombre}**  
-    - Tipo: {pokemon.tipo}  
-    - Nivel: {pokemon.nivel}  
-    - HP: {pokemon.hp}  
-    - Ataque: {pokemon.ataque}  
-    - Defensa: {pokemon.defensa}  
-    - Velocidad: {pokemon.velocidad}  
-    """
-    st.toast("💪 ¡Logro desbloqueado: Victoria!", icon="⚔️")
-    st.success(f"✅ ¡Has vencido a {pokemon.nombre}!")
-    st.markdown(f'<div class="logro-box">{mensaje}</div>', unsafe_allow_html=True)
 
 def guardar_partida():
     elementos = st.session_state.equipo.obtener_todos()
@@ -209,6 +187,14 @@ def cargar_pokedex(archivo_subido=None):
 def obtener_nombres_equipo():
     return [p.nombre.lower() for p in st.session_state.equipo.obtener_todos()]
 
+def mostrar_logro(titulo, mensaje, icono="🏆"):
+    """Guarda un logro en el estado para mostrarlo después del rerun."""
+    st.session_state.logro = {
+        "titulo": titulo,
+        "mensaje": mensaje,
+        "icono": icono
+    }
+
 def capturar_pokemon_aleatorio():
     if not st.session_state.pokedex:
         st.warning("No hay datos de Pokémon. Carga el archivo CSV primero.")
@@ -228,7 +214,20 @@ def capturar_pokemon_aleatorio():
     )
     st.session_state.equipo.insertar_final(nuevo)
     registrar_accion(f"Capturado aleatorio {entry['name']} (código {codigo})")
-    mostrar_logro_captura(nuevo)  # <-- Aquí se muestra el logro
+    # Guardar logro
+    mostrar_logro(
+        titulo=f"¡Nuevo Pokémon capturado!",
+        mensaje=f"""
+        **{nuevo.nombre}**  
+        - Tipo: {nuevo.tipo}  
+        - Nivel: {nuevo.nivel}  
+        - HP: {nuevo.hp}  
+        - Ataque: {nuevo.ataque}  
+        - Defensa: {nuevo.defensa}  
+        - Velocidad: {nuevo.velocidad}
+        """,
+        icono="🏆"
+    )
     st.rerun()
 
 def iniciar_combate_salvaje():
@@ -272,7 +271,20 @@ def realizar_ataque(jugador, oponente):
     if oponente.esta_debilitado():
         msg += f" ¡{oponente.nombre} se debilitó!"
         st.session_state.combate_activo = False
-        mostrar_logro_victoria(oponente)  # <-- Logro por victoria
+        # Guardar logro de victoria
+        mostrar_logro(
+            titulo=f"¡Victoria contra {oponente.nombre}!",
+            mensaje=f"""
+            Has derrotado a **{oponente.nombre}**  
+            - Tipo: {oponente.tipo}  
+            - Nivel: {oponente.nivel}  
+            - HP: {oponente.hp}  
+            - Ataque: {oponente.ataque}  
+            - Defensa: {oponente.defensa}  
+            - Velocidad: {oponente.velocidad}
+            """,
+            icono="⚔️"
+        )
     registrar_accion(f"Ataque: {jugador.nombre} -> {oponente.nombre} ({danio} dmg)")
     return msg
 
@@ -308,8 +320,23 @@ def init_state():
         st.session_state.datos_cargados = True
     if 'pokedex_cargado' not in st.session_state:
         st.session_state.pokedex_cargado = False
+    if 'logro' not in st.session_state:
+        st.session_state.logro = None
 
 init_state()
+
+# ===== Mostrar logro si existe (se hace después de init_state y antes del contenido) =====
+if st.session_state.logro:
+    logro = st.session_state.logro
+    st.success(f"{logro['icono']} ¡{logro['titulo']}!")
+    st.markdown(f"""
+    <div class="logro-box">
+        <h2>{logro['icono']} {logro['titulo']}</h2>
+        <div class="detalles">{logro['mensaje']}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    # Limpiar el logro para que no se muestre de nuevo
+    st.session_state.logro = None
 
 with st.sidebar:
     st.image("https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg", width=200)
@@ -444,7 +471,20 @@ elif st.session_state.pagina == "Gestion de Equipo":
                         nuevo = Pokemon(codigo, nombre, tipo, nivel, hp, hp, ataque, defensa, velocidad)
                         st.session_state.equipo.insertar_final(nuevo)
                         registrar_accion(f"Capturado manual {nombre} (codigo {codigo})")
-                        mostrar_logro_captura(nuevo)  # <-- Logro por captura manual
+                        # Guardar logro
+                        mostrar_logro(
+                            titulo=f"¡Nuevo Pokémon capturado!",
+                            mensaje=f"""
+                            **{nuevo.nombre}**  
+                            - Tipo: {nuevo.tipo}  
+                            - Nivel: {nuevo.nivel}  
+                            - HP: {nuevo.hp}  
+                            - Ataque: {nuevo.ataque}  
+                            - Defensa: {nuevo.defensa}  
+                            - Velocidad: {nuevo.velocidad}
+                            """,
+                            icono="🏆"
+                        )
                         st.rerun()
                     else:
                         st.error("Nombre y tipo son obligatorios.")
