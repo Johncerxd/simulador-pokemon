@@ -32,16 +32,14 @@ class Pokemon:
         self.nivel = nivel
         self.hp = hp
 
-# --- CONFIGURACIÓN ---
+# --- CONFIGURACIÓN E INTERFAZ ---
 st.set_page_config(page_title="Simulador Pokémon Pro", layout="wide")
 
-# CSS para fondos de tablas y cajas
 st.markdown("""
     <style>
     .stApp { background: url('https://wallpapercave.com/dwp1x/wp12939364.jpg') no-repeat center center fixed; background-size: cover; }
     .console-box { background-color: rgba(20, 25, 30, 0.9); padding: 30px; border-radius: 15px; border: 3px solid #00f2ff; color: #ffffff; }
-    /* Fondo sólido para tablas y datos */
-    [data-testid="stTable"], [data-testid="stDataFrame"] { background-color: rgba(20, 25, 30, 0.95) !important; padding: 10px; border-radius: 10px; }
+    [data-testid="stTable"] { background-color: rgba(20, 25, 30, 0.95) !important; padding: 10px; border-radius: 10px; color: white !important; }
     .stTable table { color: white !important; }
     </style>
     """, unsafe_allow_html=True)
@@ -62,29 +60,30 @@ st.markdown('<div class="console-box">', unsafe_allow_html=True)
 
 if st.session_state.pagina == "Gestión de Equipo":
     st.header("🎒 Tu Equipo")
-    
-    # BUSCADOR INTERACTIVO
     elementos = st.session_state.equipo.obtener_todos()
-    df_equipo = pd.DataFrame([{"Nombre": p.nombre, "Tipo": p.tipo, "Nivel": p.nivel, "HP": p.hp} for p in elementos])
     
-    if not df_equipo.empty:
+    if elementos:
+        df_equipo = pd.DataFrame([{"Nombre": p.nombre, "Tipo": p.tipo, "Nivel": p.nivel, "HP": p.hp} for p in elementos])
+        
         col1, col2, col3 = st.columns(3)
         busqueda = col1.text_input("🔍 Buscar por Nombre")
         tipo_filtro = col2.selectbox("🏷️ Filtrar por Tipo", ["Todos"] + list(df_equipo["Tipo"].unique()))
-        hp_filtro = col3.slider("❤️ HP Mínimo", int(df_equipo["HP"].min()), int(df_equipo["HP"].max()))
         
-        # Aplicar filtros
-        df_filtrado = df_equipo[df_equipo["Nombre"].str.contains(busqueda, case=False)]
-        if tipo_filtro != "Todos": df_filtrado = df_filtrado[df_filtrado["Tipo"] == tipo_filtro]
-        df_filtrado = df_filtrado[df_filtrado["HP"] >= hp_filtro]
+        # Validar rango para el slider
+        min_hp, max_hp = int(df_equipo["HP"].min()), int(df_equipo["HP"].max())
+        hp_filtro = col3.slider("❤️ HP Mínimo", min_hp, max_hp, min_hp) if min_hp != max_hp else min_hp
         
-        st.table(df_filtrado)
+        # Filtrado
+        df_f = df_equipo[df_equipo["Nombre"].str.contains(busqueda, case=False)]
+        if tipo_filtro != "Todos": df_f = df_f[df_f["Tipo"] == tipo_filtro]
+        df_f = df_f[df_f["HP"] >= hp_filtro]
+        
+        st.table(df_f)
     else: st.info("Equipo vacío.")
 
 elif st.session_state.pagina == "Captura":
     with st.form("cap"):
-        n = st.text_input("Nombre"); t = st.text_input("Tipo")
-        hp = st.number_input("HP", 1, 999)
+        n = st.text_input("Nombre"); t = st.text_input("Tipo"); hp = st.number_input("HP", 1, 999)
         if st.form_submit_button("Lanzar"):
             st.session_state.equipo.insertar_final(Pokemon(n, t, 5, hp))
             st.rerun()
