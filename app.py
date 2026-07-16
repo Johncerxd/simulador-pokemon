@@ -70,17 +70,19 @@ if st.session_state.pagina == "Gestión de Equipo":
         tipo_filtro = col2.selectbox("🏷️ Filtrar por Tipo", ["Todos"] + list(df_equipo["Tipo"].unique()))
         
         col3, col4 = st.columns(2)
+        
+        # Filtros con validación de seguridad para evitar errores de rango
         nivel_min, nivel_max = int(df_equipo["Nivel"].min()), int(df_equipo["Nivel"].max())
-        nivel_rango = col3.slider("📊 Rango de Nivel", nivel_min, nivel_max, (nivel_min, nivel_max))
+        nivel_rango = col3.slider("📊 Rango de Nivel", nivel_min, nivel_max + (1 if nivel_min == nivel_max else 0), (nivel_min, nivel_max + (1 if nivel_min == nivel_max else 0)))
         
         hp_min, hp_max = int(df_equipo["HP"].min()), int(df_equipo["HP"].max())
-        hp_rango = col4.slider("❤️ Rango de HP", hp_min, hp_max, (hp_min, hp_max))
+        hp_rango = col4.slider("❤️ Rango de HP", hp_min, hp_max + (1 if hp_min == hp_max else 0), (hp_min, hp_max + (1 if hp_min == hp_max else 0)))
         
-        # Filtrado avanzado
+        # Filtrado aplicado
         df_f = df_equipo[
             (df_equipo["Nombre"].str.contains(busqueda, case=False)) &
-            (df_equipo["Nivel"].between(nivel_rango[0], nivel_rango[1])) &
-            (df_equipo["HP"].between(hp_rango[0], hp_rango[1]))
+            (df_equipo["Nivel"] >= nivel_rango[0]) & (df_equipo["Nivel"] <= nivel_rango[1]) &
+            (df_equipo["HP"] >= hp_rango[0]) & (df_equipo["HP"] <= hp_rango[1])
         ]
         if tipo_filtro != "Todos": df_f = df_f[df_f["Tipo"] == tipo_filtro]
         
