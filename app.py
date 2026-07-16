@@ -26,8 +26,9 @@ st.markdown("""
 ARCHIVO_EQUIPO = "equipo.csv"
 ARCHIVO_ENTRENADORES = "entrenadores.csv"
 ARCHIVO_HISTORIAL = "historial.csv"
-# Nombres posibles (prioriza pokemon_data.txt)
+# Lista de nombres posibles (incluye pokemon_data sin extensión y con .txt)
 POKEMON_CSV_FILES = [
+    "pokemon_data",
     "pokemon_data.txt",
     "pokemones.txt",
     "deepseek_csv_20260716_2c7d55.txt",
@@ -131,6 +132,9 @@ def cargar_partida():
         st.session_state.historial_acciones = df['accion'].tolist()
 
 def cargar_pokedex(archivo_subido=None):
+    # DEPURACIÓN (opcional): descomenta la línea siguiente para ver los archivos en el directorio
+    # st.write("Archivos en directorio:", os.listdir())
+    
     if archivo_subido is not None:
         try:
             df = pd.read_csv(archivo_subido)
@@ -142,20 +146,19 @@ def cargar_pokedex(archivo_subido=None):
             st.error(f"Error al leer el archivo: {e}")
             return
 
-    # Buscar en los nombres posibles
     for nombre_archivo in POKEMON_CSV_FILES:
         if os.path.exists(nombre_archivo):
             try:
-                # Intentar leer con separador de espacios (para pokemon_data.txt)
+                # Intentar leer con separador de espacios (para archivos con columnas separadas por espacios)
                 df = pd.read_csv(nombre_archivo, sep='\s+')
-                # Verificar que las columnas existan
+                # Verificar columnas necesarias
                 if set(['id', 'name', 'types', 'level', 'hp', 'attack', 'defense', 'speed']).issubset(df.columns):
                     st.session_state.pokedex = df.to_dict('records')
                     st.session_state.pokedex_cargado = True
                     st.success(f"Archivo '{nombre_archivo}' cargado automáticamente.")
                     return
                 else:
-                    # Si no tiene las columnas esperadas, intentar como CSV normal
+                    # Si no tiene las columnas, probar como CSV normal
                     df = pd.read_csv(nombre_archivo)
                     st.session_state.pokedex = df.to_dict('records')
                     st.session_state.pokedex_cargado = True
