@@ -4,7 +4,7 @@ from modelos import Pokemon
 from estructuras import ListaEnlazada
 
 # Configuración de página
-st.set_page_config(page_title="Simulador Pokémon Final", layout="wide")
+st.set_page_config(page_title="Simulador Pokémon Pro", layout="wide")
 
 # --- ESTILOS TEMÁTICOS ---
 st.markdown("""
@@ -23,9 +23,9 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Inicializar sesión
+# Inicializar sesión con tus clases
 if 'equipo' not in st.session_state:
-    st.session_state.equipo = ListaEnlazada() #
+    st.session_state.equipo = ListaEnlazada() #[cite: 2]
 if 'log' not in st.session_state:
     st.session_state.log = []
 
@@ -77,14 +77,19 @@ elif menu == "Arena de Combate":
         st.balloons()
         st.success("¡Victoria registrada!")
 
-# 4. EXPORTACIÓN DE DATOS
+# 4. EXPORTACIÓN DE DATOS (UNIFICADO)
 elif menu == "Exportación de Datos":
-    st.header("💾 Exportar CSV")
-    if st.session_state.log:
-        df = pd.DataFrame(st.session_state.log)
+    st.header("💾 Exportar CSV de Aventura")
+    equipo_data = [{"Accion": "Registro", "Resultado": f"Pokémon: {p.nombre}"} for p in st.session_state.equipo.obtener_todos()][cite: 2]
+    combates_data = st.session_state.log
+    todo_el_reporte = equipo_data + combates_data
+    
+    if todo_el_reporte:
+        df = pd.DataFrame(todo_el_reporte)
+        st.table(df)
         csv = df.to_csv(index=False).encode('utf-8')
-        st.download_button("Descargar Reporte", csv, "reporte.csv", "text/csv")
+        st.download_button("Descargar Reporte Completo", csv, "reporte_aventura.csv", "text/csv")
     else:
-        st.info("No hay datos de combate para exportar.")
+        st.info("Aún no tienes registros de Pokémon ni de combates.")
 
 st.markdown('</div>', unsafe_allow_html=True)
