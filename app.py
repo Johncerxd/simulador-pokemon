@@ -44,12 +44,19 @@ st.markdown("""
         background-color: rgba(0,0,0,0.7) !important;
         color: white !important;
     }
+    .capturado {
+        color: #00ff00;
+    }
+    .no-capturado {
+        color: #ff4444;
+    }
     </style>
 """, unsafe_allow_html=True)
 
 ARCHIVO_EQUIPO = "equipo.csv"
 ARCHIVO_ENTRENADORES = "entrenadores.csv"
 ARCHIVO_HISTORIAL = "historial.csv"
+POKEMON_CSV = "deepseek_csv_20260716_2c7d55.txt"
 
 def generar_codigo():
     if st.session_state.equipo.cabeza is None:
@@ -147,6 +154,50 @@ def cargar_partida():
         df = pd.read_csv(ARCHIVO_HISTORIAL)
         st.session_state.historial_acciones = df['accion'].tolist()
 
+def cargar_pokedex():
+    if os.path.exists(POKEMON_CSV):
+        df = pd.read_csv(POKEMON_CSV)
+        st.session_state.pokedex = df.to_dict('records')
+        # Inicializar capturados si no existe
+        if 'capturados' not in st.session_state:
+            st.session_state.capturados = set()
+        # Sincronizar capturados con el equipo actual (al cargar)
+        if 'equipo' in st.session_state:
+            for p in st.session_state.equipo.obtener_todos():
+                # Buscar el id en pokedex por nombre (asumiendo nombres únicos)
+                for entry in st.session_state.pokedex:
+                    if entry['name'].lower() == p.nombre.lower():
+                        st.session_state.capturados.add(entry['id'])
+                        break
+    else:
+        st.session_state.pokedex = []
+        st.session_state.capturados = set()
+
+def capturar_pokemon_aleatorio():
+    if not st.session_state.pokedex:
+        st.warning("No hay datos de Pokémon. Asegúrate de que el archivo CSV esté presente.")
+        return
+    # Elegir un Pokémon aleatorio de la pokedex
+    entry = random.choice(st.session_state.pokedex)
+    # Crear el objeto Pokemon
+    codigo = generar_codigo()
+    nuevo = Pokemon(
+        codigo=codigo,
+        nombre=entry['name'],
+        tipo=entry['types'],
+        nivel=entry['level'],
+        hp_maximo=entry['hp'],
+        hp=entry['hp'],
+        ataque=entry['attack'],
+        defensa=entry['defense'],
+        velocidad=entry['speed']
+    )
+    st.session_state.equipo.insertar_final(nuevo)
+    st.session_state.capturados.add(entry['id'])
+    registrar_accion(f"Capturado aleatorio {entry['name']} (código {codigo})")
+    st.success(f"¡{entry['name']} capturado con éxito!")
+    st.rerun()
+
 def iniciar_combate_salvaje():
     tipos = ['Fuego', 'Agua', 'Planta', 'Electrico', 'Psiquico', 'Roca', 'Tierra']
     nombres = ['Pikachu', 'Charmander', 'Squirtle', 'Bulbasaur', 'Eevee', 'Mewtwo', 'Gengar']
@@ -218,6 +269,7 @@ if 'turno' not in st.session_state:
     st.session_state.turno = 0
 if 'datos_cargados' not in st.session_state:
     cargar_partida()
+    cargar_pokedex()
     st.session_state.datos_cargados = True
 
 with st.sidebar:
@@ -330,28 +382,56 @@ elif st.session_state.pagina == "Gestion de Equipo":
             if not encontrado:
                 st.error("No se encontro un Pokemon con ese codigo.")
     else:
-        st.info("Equipo vacio. Captura Pokemon usando el formulario de abajo.")
+        st.info("Equipo vacio. Captura Pokemon usando las opciones de abajo.")
 
-    with st.expander("➕ Capturar nuevo Pokemon", expanded=False):
-        with st.form("captura_form"):
-            col1, col2 = st.columns(2)
-            nombre = col1.text_input("Nombre")
-            tipo = col2.text_input("Tipo")
-            nivel = col1.number_input("Nivel", 1, 100, 5)
-            hp = col2.number_input("HP", 1, 999, 50)
-            ataque = col1.number_input("Ataque", 1, 100, 10)
-            defensa = col2.number_input("Defensa", 1, 100, 10)
-            velocidad = col1.number_input("Velocidad", 1, 100, 10)
-            if st.form_submit_button("Capturar"):
-                if nombre and tipo:
-                    codigo = generar_codigo()
-                    nuevo = Pokemon(codigo, nombre, tipo, nivel, hp, hp, ataque, defensa, velocidad)
-                    st.session_state.equipo.insertar_final(nuevo)
-                    registrar_accion(f"Capturado {nombre} (codigo {codigo})")
-                    st.success(f"¡{nombre} capturado con exito!")
-                    st.rerun()
-                else:
-                    st.error("Nombre y tipo son obligatorios.")
+    # Sección de captura
+    st.subheader("➕ Capturar Pokemon")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🎲 Capturar Pokemon Aleatorio del CSV"):
+            capturar_pokemon_aleatorio()
+    with col2:
+        # Captura manual (existente)
+        with st.expander("✏️ Captura manual", expanded=False):
+            with st.form("captura_manual"):
+                nombre = st.text_input("Nombre")
+                tipo = st.text_input("Tipo")
+                nivel = st.number_input("Nivel", 1, 100, 5)
+                hp = st.number_input("HP", 1, 999, 50)
+                ataque = st.number_input("Ataque", 1, 100, 10)
+                defensa = st.number_input("Defensa", 1, 100, 10)
+                velocidad = st.number_input("Velocidad", 1, 100, 10)
+                if st.form_submit_button("Capturar manual"):
+                    if nombre and tipo:
+                        codigo = generar_codigo()
+                        nuevo = Pokemon(codigo, nombre, tipo, nivel, hp, hp, ataque, defensa, velocidad)
+                        st.session_state.equipo.insertar_final(nuevo)
+                        registrar_accion(f"Capturado manual {nombre} (codigo {codigo})")
+                        st.success(f"¡{nombre} capturado con exito!")
+                        st.rerun()
+                    else:
+                        st.error("Nombre y tipo son obligatorios.")
+
+    # Pokedex
+    with st.expander("📖 Pokedex - Pokemon disponibles", expanded=False):
+        if st.session_state.pokedex:
+            total = len(st.session_state.pokedex)
+            capturados = len(st.session_state.capturados)
+            st.write(f"**Capturados:** {capturados} / {total}")
+            # Crear tabla con estado
+            data = []
+            for entry in st.session_state.pokedex:
+                estado = "✅" if entry['id'] in st.session_state.capturados else "❌"
+                data.append({
+                    "ID": entry['id'],
+                    "Nombre": entry['name'],
+                    "Tipo": entry['types'],
+                    "Estado": estado
+                })
+            df_pokedex = pd.DataFrame(data)
+            st.dataframe(df_pokedex, use_container_width=True)
+        else:
+            st.warning("No se encontró el archivo CSV con los datos de Pokémon.")
 
 elif st.session_state.pagina == "Combate":
     st.header("⚔️ Combate")
@@ -597,6 +677,7 @@ elif st.session_state.pagina == "Persistencia":
         st.session_state.cola_entrenadores = Cola()
         st.session_state.historial_acciones = []
         cargar_partida()
+        cargar_pokedex()
         st.success("Partida cargada correctamente.")
         st.rerun()
 
