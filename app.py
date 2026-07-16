@@ -78,9 +78,18 @@ elif menu == "Arena de Combate":
         st.success("¡Victoria registrada!")
 
 # 4. EXPORTACIÓN DE DATOS (UNIFICADO)
+# 4. EXPORTACIÓN DE DATOS (VERSION SEGURA)
 elif menu == "Exportación de Datos":
     st.header("💾 Exportar CSV de Aventura")
-    equipo_data = [{"Accion": "Registro", "Resultado": f"Pokémon: {p.nombre}"} for p in st.session_state.equipo.obtener_todos()][cite: 2]
+    
+    # Obtenemos los elementos de forma segura
+    lista_equipo = st.session_state.equipo.obtener_todos() #
+    
+    # Creamos las listas de forma separada para evitar errores
+    equipo_data = []
+    for p in lista_equipo:
+        equipo_data.append({"Accion": "Registro", "Resultado": f"Pokémon: {p.nombre}"})
+        
     combates_data = st.session_state.log
     todo_el_reporte = equipo_data + combates_data
     
@@ -91,5 +100,3 @@ elif menu == "Exportación de Datos":
         st.download_button("Descargar Reporte Completo", csv, "reporte_aventura.csv", "text/csv")
     else:
         st.info("Aún no tienes registros de Pokémon ni de combates.")
-
-st.markdown('</div>', unsafe_allow_html=True)
