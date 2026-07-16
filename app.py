@@ -10,7 +10,7 @@ st.set_page_config(page_title="Simulador Pokémon Pro", layout="wide")
 st.markdown("""
     <style>
     .stApp {
-        background: url('https://wallpapercave.com/w/wp12939364') no-repeat center center fixed;
+        background: url('https://wallpapercave.com/dwp1x/wp12939364.jpg') no-repeat center center fixed;
         background-size: cover;
     }
     .console-box {
@@ -23,9 +23,9 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Inicializar sesión con tus clases
+# Inicializar sesión
 if 'equipo' not in st.session_state:
-    st.session_state.equipo = ListaEnlazada() #[cite: 2]
+    st.session_state.equipo = ListaEnlazada()[cite: 2]
 if 'log' not in st.session_state:
     st.session_state.log = []
 
@@ -38,20 +38,20 @@ menu = st.sidebar.radio("SISTEMA DE CONTROL",
 
 # 1. GESTIÓN DE EQUIPO
 if menu == "Gestión de Equipo":
-    st.header("Registrar nuevo Pokémon")
+    st.header("🎒 Registrar nuevo Pokémon")
     with st.form("nuevo_pokemon"):
         nombre = st.text_input("Nombre:")
         tipo = st.text_input("Tipo:")
         nivel = st.number_input("Nivel:", 1, 100)
         hp = st.number_input("HP:", 1, 999)
         if st.form_submit_button("Guardar"):
-            nuevo = Pokemon(0, nombre, tipo, nivel, hp, hp, 10, 10, 10) #[cite: 3]
-            st.session_state.equipo.insertar_final(nuevo) #[cite: 2]
+            nuevo = Pokemon(0, nombre, tipo, nivel, hp, hp, 10, 10, 10)[cite: 3]
+            st.session_state.equipo.insertar_final(nuevo)[cite: 2]
             st.success(f"¡{nombre} añadido al equipo!")
             st.rerun()
 
     st.subheader("Tu Equipo Actual")
-    elementos = st.session_state.equipo.obtener_todos() #[cite: 2]
+    elementos = st.session_state.equipo.obtener_todos()[cite: 2]
     if elementos:
         data = [{"Nombre": p.nombre, "Tipo": p.tipo, "Nivel": p.nivel, "HP": p.hp} for p in elementos]
         st.table(pd.DataFrame(data))
@@ -63,7 +63,7 @@ elif menu == "Búsqueda Avanzada":
     st.header("🔍 Buscar Pokémon")
     query = st.text_input("Nombre a buscar:")
     if query:
-        elementos = st.session_state.equipo.obtener_todos() #[cite: 2]
+        elementos = st.session_state.equipo.obtener_todos()[cite: 2]
         resultados = [p for p in elementos if query.lower() in p.nombre.lower()]
         if resultados:
             for p in resultados: st.success(f"Encontrado: {p.nombre} (Tipo: {p.tipo})")
@@ -77,15 +77,11 @@ elif menu == "Arena de Combate":
         st.balloons()
         st.success("¡Victoria registrada!")
 
-# 4. EXPORTACIÓN DE DATOS (UNIFICADO)
-# 4. EXPORTACIÓN DE DATOS (VERSION SEGURA)
+# 4. EXPORTACIÓN DE DATOS
 elif menu == "Exportación de Datos":
     st.header("💾 Exportar CSV de Aventura")
     
-    # Obtenemos los elementos de forma segura
-    lista_equipo = st.session_state.equipo.obtener_todos() #
-    
-    # Creamos las listas de forma separada para evitar errores
+    lista_equipo = st.session_state.equipo.obtener_todos()[cite: 2]
     equipo_data = []
     for p in lista_equipo:
         equipo_data.append({"Accion": "Registro", "Resultado": f"Pokémon: {p.nombre}"})
@@ -100,3 +96,5 @@ elif menu == "Exportación de Datos":
         st.download_button("Descargar Reporte Completo", csv, "reporte_aventura.csv", "text/csv")
     else:
         st.info("Aún no tienes registros de Pokémon ni de combates.")
+
+st.markdown('</div>', unsafe_allow_html=True)
