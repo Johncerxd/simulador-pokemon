@@ -1,58 +1,55 @@
 import streamlit as st
 import pandas as pd
+from modelos import Pokemon
+from estructuras import ListaEnlazada
 
-# Configuración de página
 st.set_page_config(page_title="Simulador Pokémon Final", layout="wide")
 
-# --- ESTILOS TEMÁTICOS (FONDO Y CAJAS) ---
+# --- ESTILOS ---
 st.markdown("""
 <style>
-.stApp {
-    background-image: url('https://i.gifer.com/P4W4.gif');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-}
-.main-box {
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 15px;
-    color: white;
-    border: 2px solid #00f2ff;
-}
+.stApp { background-image: url('https://i.gifer.com/P4W4.gif'); background-size: cover; }
+.main-box { background-color: rgba(0, 0, 0, 0.8); padding: 20px; border-radius: 15px; color: white; border: 2px solid #00f2ff; }
 </style>
 """, unsafe_allow_html=True)
 
-# Inicializar sesión
-if 'data' not in st.session_state:
-    st.session_state.data = []
+# --- GESTIÓN DE ESTADO CON TUS CLASES ---
+if 'equipo' not in st.session_state:
+    st.session_state.equipo = ListaEnlazada()
+if 'log' not in st.session_state:
+    st.session_state.log = []
 
 st.markdown('<div class="main-box">', unsafe_allow_html=True)
-st.title("⚡ Simulador Pokémon - Proyecto Final ⚡")
+st.title("⚡ Simulador Pokémon Pro")
 
-menu = st.sidebar.radio("Navegación", ["Arena de Combate", "Centro de Captura", "Gestión de Datos"])
+menu = st.sidebar.radio("Navegación", ["Arena", "Captura", "Gestión de Datos"])
 
-if menu == "Arena de Combate":
+# --- LÓGICA DE ARENA (USANDO MODELOS) ---
+if menu == "Arena":
     st.subheader("⚔️ Registro de Combates")
     if st.button("Registrar Victoria"):
-        st.session_state.data.append({"Accion": "Combate", "Resultado": "Victoria"})
-        st.success("¡Victoria registrada!")
+        st.session_state.log.append({"Accion": "Combate", "Resultado": "Victoria"})
+        st.success("¡Victoria en Arena registrada!")
 
-elif menu == "Centro de Captura":
+# --- LÓGICA DE CAPTURA (USANDO ESTRUCTURAS) ---
+elif menu == "Captura":
     st.subheader("🎯 Capturar Pokémon")
-    poke = st.text_input("Nombre del Pokémon:")
+    nombre = st.text_input("Nombre del Pokémon:")
     if st.button("Lanzar Pokéball"):
-        st.session_state.data.append({"Accion": "Captura", "Resultado": poke})
+        nuevo_poke = Pokemon(1, nombre, "Normal", 5, 100, 100, 10, 10, 10)
+        st.session_state.equipo.insertar_final(nuevo_poke) # Uso de tu ListaEnlazada
+        st.session_state.log.append({"Accion": "Captura", "Resultado": nombre})
         st.balloons()
-        st.success(f"¡{poke} capturado!")
+        st.success(f"¡{nombre} añadido a tu Lista Enlazada!")
 
+# --- GESTIÓN DE DATOS ---
 elif menu == "Gestión de Datos":
-    st.subheader("📊 Tus Estadísticas")
-    if st.session_state.data:
-        df = pd.DataFrame(st.session_state.data)
+    st.subheader("📊 Estadísticas de tu Aventura")
+    if st.session_state.log:
+        df = pd.DataFrame(st.session_state.log)
         st.table(df)
         csv = df.to_csv(index=False).encode('utf-8')
-        st.download_button("📥 Descargar CSV", csv, "pokemon_data.csv", "text/csv")
+        st.download_button("📥 Descargar Reporte CSV", csv, "aventura_pokemon.csv", "text/csv")
     else:
         st.info("Aún no tienes registros.")
 
