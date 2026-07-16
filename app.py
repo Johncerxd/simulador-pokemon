@@ -20,13 +20,21 @@ st.markdown("""
     .stTable, [data-testid="stTable"] { background-color: rgba(20,25,30,0.95) !important; padding: 10px; border-radius: 10px; color: white !important; }
     .stTable table, [data-testid="stTable"] table { color: white !important; }
     .stAlert { background-color: rgba(0,0,0,0.7) !important; color: white !important; }
+    .logro-box {
+        background: linear-gradient(135deg, #f7971e, #ffd200);
+        color: #1a1a2e;
+        padding: 15px;
+        border-radius: 10px;
+        border: 3px solid #ffd700;
+        box-shadow: 0 0 20px #ffd700;
+        margin: 10px 0;
+    }
     </style>
 """, unsafe_allow_html=True)
 
 ARCHIVO_EQUIPO = "equipo.csv"
 ARCHIVO_ENTRENADORES = "entrenadores.csv"
 ARCHIVO_HISTORIAL = "historial.csv"
-# Lista de nombres posibles (incluye pokemon_data sin extensión y con .txt)
 POKEMON_CSV_FILES = [
     "pokemon_data",
     "pokemon_data.txt",
@@ -61,6 +69,38 @@ def deshacer_accion():
     if st.session_state.historial_acciones:
         return st.session_state.historial_acciones.pop()
     return None
+
+def mostrar_logro_captura(pokemon):
+    """Muestra un logro por captura de Pokémon."""
+    mensaje = f"""
+    🏆 **¡Nuevo Pokémon capturado!**  
+    **{pokemon.nombre}**  
+    - Tipo: {pokemon.tipo}  
+    - Nivel: {pokemon.nivel}  
+    - HP: {pokemon.hp}  
+    - Ataque: {pokemon.ataque}  
+    - Defensa: {pokemon.defensa}  
+    - Velocidad: {pokemon.velocidad}  
+    """
+    st.toast("🎉 ¡Logro desbloqueado: Nuevo Pokémon!", icon="🏆")
+    st.success(f"✅ {pokemon.nombre} añadido a tu equipo.")
+    st.markdown(f'<div class="logro-box">{mensaje}</div>', unsafe_allow_html=True)
+
+def mostrar_logro_victoria(pokemon):
+    """Muestra un logro por derrotar a un Pokémon."""
+    mensaje = f"""
+    ⚔️ **¡Victoria en combate!**  
+    Has derrotado a **{pokemon.nombre}**  
+    - Tipo: {pokemon.tipo}  
+    - Nivel: {pokemon.nivel}  
+    - HP: {pokemon.hp}  
+    - Ataque: {pokemon.ataque}  
+    - Defensa: {pokemon.defensa}  
+    - Velocidad: {pokemon.velocidad}  
+    """
+    st.toast("💪 ¡Logro desbloqueado: Victoria!", icon="⚔️")
+    st.success(f"✅ ¡Has vencido a {pokemon.nombre}!")
+    st.markdown(f'<div class="logro-box">{mensaje}</div>', unsafe_allow_html=True)
 
 def guardar_partida():
     elementos = st.session_state.equipo.obtener_todos()
@@ -132,9 +172,6 @@ def cargar_partida():
         st.session_state.historial_acciones = df['accion'].tolist()
 
 def cargar_pokedex(archivo_subido=None):
-    # DEPURACIÓN (opcional): descomenta la línea siguiente para ver los archivos en el directorio
-    # st.write("Archivos en directorio:", os.listdir())
-    
     if archivo_subido is not None:
         try:
             df = pd.read_csv(archivo_subido)
@@ -149,16 +186,13 @@ def cargar_pokedex(archivo_subido=None):
     for nombre_archivo in POKEMON_CSV_FILES:
         if os.path.exists(nombre_archivo):
             try:
-                # Intentar leer con separador de espacios (para archivos con columnas separadas por espacios)
                 df = pd.read_csv(nombre_archivo, sep='\s+')
-                # Verificar columnas necesarias
                 if set(['id', 'name', 'types', 'level', 'hp', 'attack', 'defense', 'speed']).issubset(df.columns):
                     st.session_state.pokedex = df.to_dict('records')
                     st.session_state.pokedex_cargado = True
                     st.success(f"Archivo '{nombre_archivo}' cargado automáticamente.")
                     return
                 else:
-                    # Si no tiene las columnas, probar como CSV normal
                     df = pd.read_csv(nombre_archivo)
                     st.session_state.pokedex = df.to_dict('records')
                     st.session_state.pokedex_cargado = True
@@ -194,7 +228,7 @@ def capturar_pokemon_aleatorio():
     )
     st.session_state.equipo.insertar_final(nuevo)
     registrar_accion(f"Capturado aleatorio {entry['name']} (código {codigo})")
-    st.success(f"¡{entry['name']} capturado con éxito!")
+    mostrar_logro_captura(nuevo)  # <-- Aquí se muestra el logro
     st.rerun()
 
 def iniciar_combate_salvaje():
@@ -238,6 +272,7 @@ def realizar_ataque(jugador, oponente):
     if oponente.esta_debilitado():
         msg += f" ¡{oponente.nombre} se debilitó!"
         st.session_state.combate_activo = False
+        mostrar_logro_victoria(oponente)  # <-- Logro por victoria
     registrar_accion(f"Ataque: {jugador.nombre} -> {oponente.nombre} ({danio} dmg)")
     return msg
 
@@ -324,7 +359,7 @@ if st.session_state.pagina == "Inicio":
         st.info("Tu equipo esta vacio. Captura algunos Pokemon en 'Gestion de Equipo'.")
 
 elif st.session_state.pagina == "Gestion de Equipo":
-    st.header("🎒 Equipo Pokemon")
+    st.header("🎒 Gestion de Equipo")
 
     elementos = st.session_state.equipo.obtener_todos()
     if elementos:
@@ -391,7 +426,7 @@ elif st.session_state.pagina == "Gestion de Equipo":
     st.subheader("➕ Capturar Pokemon")
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🎲 Capturar Pokemon Aleatorio "):
+        if st.button("🎲 Capturar Pokemon Aleatorio del CSV"):
             capturar_pokemon_aleatorio()
     with col2:
         with st.expander("✏️ Captura manual", expanded=False):
@@ -409,7 +444,7 @@ elif st.session_state.pagina == "Gestion de Equipo":
                         nuevo = Pokemon(codigo, nombre, tipo, nivel, hp, hp, ataque, defensa, velocidad)
                         st.session_state.equipo.insertar_final(nuevo)
                         registrar_accion(f"Capturado manual {nombre} (codigo {codigo})")
-                        st.success(f"¡{nombre} capturado con exito!")
+                        mostrar_logro_captura(nuevo)  # <-- Logro por captura manual
                         st.rerun()
                     else:
                         st.error("Nombre y tipo son obligatorios.")
@@ -674,7 +709,7 @@ elif st.session_state.pagina == "Historial":
         st.info("Aun no se han registrado acciones.")
 
 elif st.session_state.pagina == "Persistencia":
-    st.header("💾 Creador de entrenador")
+    st.header("💾 Persistencia de Datos")
 
     col1, col2 = st.columns(2)
     if col1.button("💿 Guardar partida"):
